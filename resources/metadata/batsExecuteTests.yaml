@@ -42,3 +42,8 @@ spec:
     - name: bats
       image: node:lts-stretch
       workingDir: /home/node
+      conditions:
+        - conditionRef: strings-equal
+          params:
+            - name: outputFormat
+              value: junit

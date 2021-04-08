@@ -130,7 +130,7 @@ func batsExecuteTestsMetadata() config.StepData {
 				},
 			},
 			Containers: []config.Container{
-				{Name: "bats", Image: "node:lts-stretch", WorkingDir: "/home/node"},
+				{Name: "bats", Image: "node:lts-stretch", WorkingDir: "/home/node", Conditions: []config.Condition{{ConditionRef: "strings-equal", Params: []config.Param{{Name: "outputFormat", Value: "junit"}}}}},
 			},
 		},
 	}

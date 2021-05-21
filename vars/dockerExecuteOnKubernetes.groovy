@@ -198,6 +198,15 @@ import hudson.AbortException
      * use this volume in an initContainer.
      */
     'containerMountPath',
+     /**
+     * as `dockerImage` for the init container
+     */
+    'initContainerImage',
+    /**
+     * Command executed inside the init container bash. Please enter command without any bash prefix
+     */
+    'initContainerCommand',
+
 ])
 @Field Set PARAMETER_KEYS = STEP_CONFIG_KEYS.minus([
     'stashIncludes',
@@ -336,6 +345,7 @@ private String generatePodSpec(Map config) {
         spec      : [:]
     ]
     podSpec.spec += getAdditionalPodProperties(config)
+    podSpec.spec.initContainers = getInitContainerList(config)
     podSpec.spec.containers = getContainerList(config)
     podSpec.spec.securityContext = getSecurityContext(config)
 
@@ -348,7 +358,6 @@ private String generatePodSpec(Map config) {
 
     return new JsonUtils().groovyObjectToPrettyJsonString(podSpec)
 }
-
 
 private String stashWorkspace(config, prefix, boolean chown = false, boolean stashBack = false) {
     def stashName = "${prefix}-${config.uniqueId}"
@@ -414,6 +423,37 @@ private void unstashWorkspace(config, prefix) {
         echo "Unstash workspace failed with throwable ${e.getMessage()}"
         throw e
     }
+}
+
+private List getInitContainerList(config){
+    def initContainerSpecList = []
+    if (config.initContainerImage && config.containerMountPath) {
+        // regex [\W_] matches any non-word character equivalent to [^a-zA-Z0-9_]
+        def initContainerName = config.initContainerImage.replaceAll(/[\W_]/,"_" )
+        def initContainerSpec = [
+            name           : initContainerName,
+            image          : config.initContainerImage
+            ]
+        if (config.containerMountPath) {
+            initContainerSpec.volumeMounts = [[name: "volume", mountPath: config.containerMountPath]]
+        }
+        if (config.initContainerCommand == null) {
+            initContainerSpec['command'] = [
+                '/usr/bin/tail',
+                '-f',
+                '/dev/null'
+            ]
+        } else {
+            initContainerSpec['command'] = [
+                'sh',
+                '-c',
+                config.initContainerCommand
+            ]
+        }
+        echo "initContainerSpec configurations : ${initContainerSpec}"
+        initContainerSpecList.push(initContainerSpec)
+    }
+    return initContainerSpecList
 }
 
 private List getContainerList(config) {
@@ -497,7 +537,6 @@ private List getContainerList(config) {
             env            : getContainerEnvs(config, config.sidecarImage, config.sidecarEnvVars, config.sidecarWorkspace),
             command        : []
         ]
-
         def resources = getResources(sideCarContainerName, config)
         if(resources) {
             containerSpec.resources = resources

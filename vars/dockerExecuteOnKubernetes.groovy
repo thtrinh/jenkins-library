@@ -17,24 +17,24 @@ import hudson.AbortException
 
 @Field Set GENERAL_CONFIG_KEYS = [
     'jenkinsKubernetes',
-        /**
-         * Jnlp agent Docker images which should be used to create new pods.
-         * @parentConfigKey jenkinsKubernetes
-         */
-        'jnlpAgent',
-        /**
-         * Namespace that should be used to create a new pod
-         * @parentConfigKey jenkinsKubernetes
-         */
-        'namespace',
-        /**
-         * Name of the pod template that should be inherited from.
-         * The pod template can be defined in the Jenkins UI
-         * @parentConfigKey jenkinsKubernetes
-         */
-        'inheritFrom',
-        'additionalPodProperties',
-        'resources',
+    /**
+     * Jnlp agent Docker images which should be used to create new pods.
+     * @parentConfigKey jenkinsKubernetes
+     */
+    'jnlpAgent',
+    /**
+     * Namespace that should be used to create a new pod
+     * @parentConfigKey jenkinsKubernetes
+     */
+    'namespace',
+    /**
+     * Name of the pod template that should be inherited from.
+     * The pod template can be defined in the Jenkins UI
+     * @parentConfigKey jenkinsKubernetes
+     */
+    'inheritFrom',
+    'additionalPodProperties',
+    'resources',
     /**
      * Set this to 'false' to bypass a docker image pull.
      * Useful during development process. Allows testing of images which are available in the local registry only.
@@ -198,12 +198,21 @@ import hudson.AbortException
      * use this volume in an initContainer.
      */
     'containerMountPath',
+<<<<<<< Updated upstream
      /**
      * as `dockerImage` for the init container
      */
     'initContainerImage',
     /**
      * Command executed inside the init container bash. Please enter command without any bash prefix
+=======
+    /**
+     * The DockerImage to run as initContainer.
+     */
+    'initContainerImage',
+    /**
+     * Command executed inside the init container shell. Please enter command without providing any "sh -c" prefix. For example for an echo message, simply enter: echo `HelloWorld`
+>>>>>>> Stashed changes
      */
     'initContainerCommand',
 
@@ -402,8 +411,8 @@ private Map getAdditionalPodProperties(Map config) {
     Map podProperties = config.additionalPodProperties ?: config.jenkinsKubernetes.additionalPodProperties ?: [:]
     if(podProperties) {
         echo "Additional pod properties found (${podProperties.keySet()})." +
-        ' Providing additional pod properties is some kind of expert mode. In case of any problems caused by these' +
-        ' additional properties only limited support can be provided.'
+            ' Providing additional pod properties is some kind of expert mode. In case of any problems caused by these' +
+            ' additional properties only limited support can be provided.'
     }
     return podProperties
 }
@@ -429,11 +438,19 @@ private List getInitContainerList(config){
     def initContainerSpecList = []
     if (config.initContainerImage && config.containerMountPath) {
         // regex [\W_] matches any non-word character equivalent to [^a-zA-Z0-9_]
+<<<<<<< Updated upstream
         def initContainerName = config.initContainerImage.replaceAll(/[\W_]/,"_" )
         def initContainerSpec = [
             name           : initContainerName,
             image          : config.initContainerImage
             ]
+=======
+        def initContainerName = config.initContainerImage.replaceAll(/[\W_]/,"-" )
+        def initContainerSpec = [
+            name           : initContainerName.toLowerCase(),
+            image          : config.initContainerImage
+        ]
+>>>>>>> Stashed changes
         if (config.containerMountPath) {
             initContainerSpec.volumeMounts = [[name: "volume", mountPath: config.containerMountPath]]
         }
@@ -450,7 +467,10 @@ private List getInitContainerList(config){
                 config.initContainerCommand
             ]
         }
+<<<<<<< Updated upstream
         echo "initContainerSpec configurations : ${initContainerSpec}"
+=======
+>>>>>>> Stashed changes
         initContainerSpecList.push(initContainerSpec)
     }
     return initContainerSpecList
@@ -580,7 +600,7 @@ private List getContainerEnvs(config, imageName, defaultEnvVars, defaultConfig) 
     if (dockerEnvVars) {
         dockerEnvVars.each {
             k, v ->
-            containerEnv << envVar(key: k, value: v.toString())
+                containerEnv << envVar(key: k, value: v.toString())
         }
     }
 

@@ -113,7 +113,6 @@ class DockerExecuteOnKubernetesTest extends BasePiperTest {
                 pullImageMap.put(container.image.toString(), container.imagePullPolicy == "Always")
                 resources.put(container.name, container.resources)
             }
-
             body()
         })
         helper.registerAllowedMethod('stash', [Map.class], { m ->
@@ -273,8 +272,8 @@ class DockerExecuteOnKubernetesTest extends BasePiperTest {
         ]]
         stepRule.step.dockerExecuteOnKubernetes(script: nullScript,
             containerMap: ['maven:3.5-jdk-8-alpine': 'mavenexecute'], {
-            bodyExecuted = true
-        })
+                bodyExecuted = true
+            })
 
         assertNull(resources.mavenexecute)
         assertTrue(bodyExecuted)
@@ -299,8 +298,8 @@ class DockerExecuteOnKubernetesTest extends BasePiperTest {
         ]]]
         stepRule.step.dockerExecuteOnKubernetes(script: nullScript,
             containerMap: ['maven:3.5-jdk-8-alpine': 'mavenexecute'], {
-            bodyExecuted = true
-        })
+                bodyExecuted = true
+            })
 
         assertEquals(requests: [memory: '1Gi',cpu: '0.25'],limits: [memory: '2Gi',cpu: '1'], resources.jnlp)
         assertEquals(requests: [memory: '1Gi',cpu: '0.25'],limits: [memory: '2Gi',cpu: '1'], resources.mavenexecute)
@@ -329,7 +328,7 @@ class DockerExecuteOnKubernetesTest extends BasePiperTest {
         stepRule.step.dockerExecuteOnKubernetes(script: nullScript,
             containerMap: ['maven:3.5-jdk-8-alpine': 'mavenexecute'],
             resources: [
-                mavenexecute: [
+                    mavenexecute: [
                     requests: [
                         memory: '8Gi',
                         cpu: '2'
@@ -340,8 +339,8 @@ class DockerExecuteOnKubernetesTest extends BasePiperTest {
                     ]
                 ]
             ]) {
-            bodyExecuted = true
-        }
+                bodyExecuted = true
+            }
 
         assertEquals(requests: [memory: '8Gi',cpu: '2'],limits: [memory: '16Gi',cpu: '4'], resources.mavenexecute)
         assertTrue(bodyExecuted)
@@ -400,8 +399,8 @@ class DockerExecuteOnKubernetesTest extends BasePiperTest {
             containerMap: ['maven:3.5-jdk-8-alpine': 'mavenexecute'],
             sidecarImage: 'ubuntu',
             sidecarName: 'mysidecar') {
-            bodyExecuted = true
-        }
+                bodyExecuted = true
+            }
 
         assertEquals(requests: [memory: '10Gi',cpu: '5.00'],limits: [memory: '20Gi',cpu: '10'], resources.mysidecar)
         assertEquals(requests: [memory: '3Gi',cpu: '0.33'],limits: [memory: '6Gi',cpu: '3'], resources.jnlp)
@@ -528,7 +527,6 @@ class DockerExecuteOnKubernetesTest extends BasePiperTest {
             //nothing to exeute
         }
         assertThat(containerCommands, hasItem(['/bin/sh', '-c', '/busybox/tail -f /dev/null']))
-
     }
 
     @Test
@@ -818,15 +816,9 @@ class DockerExecuteOnKubernetesTest extends BasePiperTest {
              ]], podSpec.spec.volumes)
         assertEquals(
             [[
-<<<<<<< Updated upstream
                 "name"     : "volume",
                 "mountPath": "/opt"
             ]], containerSpec.volumeMounts)
-=======
-                 "name"     : "volume",
-                 "mountPath": "/opt"
-             ]], containerSpec.volumeMounts)
->>>>>>> Stashed changes
         assertEquals(
             [[
                  "name"     : "volume",
@@ -840,31 +832,17 @@ class DockerExecuteOnKubernetesTest extends BasePiperTest {
             script: nullScript,
             juStabUtils: utils,
             containerName: 'mycontainer',
-<<<<<<< Updated upstream
-            initContainerImage: 'ppiper/cf-cli:?*qweqwewqe',
-=======
             initContainerImage: 'ppiper/cf-cli@sha256:latest',
->>>>>>> Stashed changes
             initContainerCommand: 'cp /usr/local/bin/cf7 /opt/bin/cf',
             dockerImage: 'maven:3.5-jdk-8-alpine',
             containerMountPath: '/opt',
         ) { bodyExecuted = true }
         def initContainer = podSpec.spec.initContainers[0]
-<<<<<<< Updated upstream
-        println(initContainer)
-        assertTrue(bodyExecuted)
-        assertEquals("ppiper_cf_cli___qweqwewqe", initContainer.name)
-        assertEquals("ppiper/cf-cli:?*qweqwewqe", initContainer.image)
-        //size 3 because initContainerCommand contains three items : [sh, -c, cp /usr/local/bin/cf7 /opt/bin/cf]
-        assertThat(initContainer.command.size(), is(3))
-
-=======
         def expectedCommandOutput = ["sh", "-c", "cp /usr/local/bin/cf7 /opt/bin/cf"]
         assertTrue(bodyExecuted)
         assertEquals("ppiper-cf-cli-sha256-latest", initContainer.name)
         assertEquals("ppiper/cf-cli@sha256:latest", initContainer.image)
-        assertTrue(initContainer.command.size() == expectedCommandOutput.size())
-        assertTrue(initContainer.command.containsAll(expectedCommandOutput))
+        assertThat(initContainer.command, is(equalTo(expectedCommandOutput)))
     }
 
     @Test
@@ -880,9 +858,7 @@ class DockerExecuteOnKubernetesTest extends BasePiperTest {
         def initContainer = podSpec.spec.initContainers[0]
         def expectedCommandOutput = ["/usr/bin/tail", "-f", "/dev/null"]
         assertTrue(bodyExecuted)
-        assertTrue(initContainer.command.size() == expectedCommandOutput.size())
-        assertTrue(initContainer.command.containsAll(expectedCommandOutput))
->>>>>>> Stashed changes
+        assertThat(initContainer.command, is(equalTo(expectedCommandOutput)))
     }
 
     private container(options, body) {

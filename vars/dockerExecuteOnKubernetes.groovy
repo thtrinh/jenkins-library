@@ -539,7 +539,7 @@ private List getContainerList(config) {
             env            : getContainerEnvs(config, config.sidecarImage, config.sidecarEnvVars, config.sidecarWorkspace),
             command        : []
         ]
-        echo "ZZZZZZZZZZ sidecar imagePullPolicy is '${pullImage ? "Always" : "IfNotPresent"}'"
+        echo "ZZZZZZZZZZ sidecar imagePullPolicy is '${config.sidecarPullImage ? "Always" : "IfNotPresent"}'"
         def resources = getResources(sideCarContainerName, config)
         if(resources) {
             containerSpec.resources = resources

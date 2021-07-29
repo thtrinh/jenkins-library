@@ -356,6 +356,8 @@ private String generatePodSpec(Map config) {
                                 ]]
     }
 
+    echo "XXXXXXXXXX"
+    echo "${new JsonUtils().groovyObjectToPrettyJsonString(podSpec)}"
     return new JsonUtils().groovyObjectToPrettyJsonString(podSpec)
 }
 
@@ -485,6 +487,7 @@ private List getContainerList(config) {
             imagePullPolicy: pullImage ? "Always" : "IfNotPresent",
             env            : getContainerEnvs(config, imageName, config.dockerEnvVars, config.dockerWorkspace)
         ]
+        echo "YYYYYYYYY imagePullPolicy is '${pullImage ? "Always" : "IfNotPresent"}'"
         if (config.containerMountPath) {
             containerSpec.volumeMounts = [[name: "volume", mountPath: config.containerMountPath]]
         }
@@ -536,6 +539,7 @@ private List getContainerList(config) {
             env            : getContainerEnvs(config, config.sidecarImage, config.sidecarEnvVars, config.sidecarWorkspace),
             command        : []
         ]
+        echo "ZZZZZZZZZZ sidecar imagePullPolicy is '${pullImage ? "Always" : "IfNotPresent"}'"
         def resources = getResources(sideCarContainerName, config)
         if(resources) {
             containerSpec.resources = resources

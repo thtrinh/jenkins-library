@@ -319,6 +319,8 @@ void executeOnPod(Map config, utils, Closure body, Script script) {
                             utils.unstashAll(stashContent)
                             echo "invalidate stash workspace-${config.uniqueId}"
                             stash name: "workspace-${config.uniqueId}", excludes: '**/*', allowEmpty: true
+                            echo "AAAAAAAAAA"
+                            sh "env"
                             body()
                         } finally {
                             stashWorkspace(config, 'container', true, true)

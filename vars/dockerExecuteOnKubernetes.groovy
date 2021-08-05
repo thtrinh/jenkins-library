@@ -321,6 +321,10 @@ void executeOnPod(Map config, utils, Closure body, Script script) {
                             stash name: "workspace-${config.uniqueId}", excludes: '**/*', allowEmpty: true
                             echo "AAAAAAAAAA"
                             sh "env"
+                            echo "BBBBBBBBBB"
+                            sh "echo \$CHROMEDRIVER_BIN"
+                            echo "CCCCCCCCCC"
+                            sh 'echo $CHROMEDRIVER_BIN'
                             body()
                         } finally {
                             stashWorkspace(config, 'container', true, true)

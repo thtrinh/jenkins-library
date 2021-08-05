@@ -32,6 +32,11 @@ func runUIVeri5(config *uiVeri5ExecuteTestsOptions, command command.ExecRunner) 
 		envs = append(envs, "TARGET_SERVER_URL="+config.TestServerURL)
 	}
 	command.SetEnv(envs)
+	if err := command.RunExecutable("env"); err != nil {
+		log.SetErrorCategory(log.ErrorCustom)
+		return errors.Wrap(err, "failed to execute env command")
+	}
+
 
 	installCommandTokens := strings.Split(config.InstallCommand, " ")
 	if err := command.RunExecutable(installCommandTokens[0], installCommandTokens[1:]...); err != nil {

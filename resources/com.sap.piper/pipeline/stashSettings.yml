@@ -3,7 +3,6 @@ Init:
   stashes:
     - name: "source"
       includes: "**/*"
-      excludes: ".pipeline/**"
 
 'Pull-Request Voting':
   unstash:

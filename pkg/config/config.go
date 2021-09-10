@@ -305,6 +305,9 @@ func GetStepConfigWithJSON(flagValues map[string]interface{}, stepConfigJSON str
 
 func (c *Config) GetStageConfig(paramJSON string, configuration io.ReadCloser, defaults []io.ReadCloser, ignoreCustomDefaults bool, acceptedParams []string, stageName string) (StepConfig, error) {
 
+	log.Entry().Warningf("AAAAAAAAAA: %s", stageName)
+	log.Entry().Warningf("XXXXXXXXXX: %s", paramJSON)
+	log.Entry().Warningf("YYYYYYYYYY: %s", acceptedParams)
 	filters := StepFilters{
 		General:    acceptedParams,
 		Steps:      []string{},
